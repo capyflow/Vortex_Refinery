@@ -65,7 +65,10 @@ func (v *Verifier) Verify(meta *PluginMetadata, pluginBinary []byte) error {
 	metaCopy := *meta
 	metaCopy.Signature = ""
 	metaCopy.SignAlgorithm = ""
-	metaJSON, _ := json.Marshal(metaCopy)
+	metaJSON, err := json.Marshal(metaCopy)
+	if err != nil {
+		return fmt.Errorf("failed to marshal metadata for signing: %w", err)
+	}
 
 	signedContent := append(metaJSON, pluginBinary...)
 
@@ -131,7 +134,10 @@ func GenerateSignature(meta *PluginMetadata, pluginBinary []byte, privateKeyByte
 	metaCopy := *meta
 	metaCopy.Signature = ""
 	metaCopy.SignAlgorithm = ""
-	metaJSON, _ := json.Marshal(metaCopy)
+	metaJSON, err := json.Marshal(metaCopy)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal metadata for signing: %w", err)
+	}
 
 	signedContent := append(metaJSON, pluginBinary...)
 

@@ -37,6 +37,10 @@ func (l *DefaultLogger) Error(msg string, args ...interface{}) {
 	log.Printf("[%s] ERROR: %s", l.workerID, msg)
 }
 
+func (l *DefaultLogger) Warn(msg string, args ...interface{}) {
+	log.Printf("[%s] WARN: %s", l.workerID, msg)
+}
+
 func (l *DefaultLogger) Debug(msg string, args ...interface{}) {
 	log.Printf("[%s] DEBUG: %s", l.workerID, msg)
 }
@@ -52,6 +56,10 @@ func (l *SimpleLogger) Info(msg string, args ...interface{}) {
 
 func (l *SimpleLogger) Error(msg string, args ...interface{}) {
 	log.Printf("[%s] ERROR: %s", l.workerID, msg)
+}
+
+func (l *SimpleLogger) Warn(msg string, args ...interface{}) {
+	log.Printf("[%s] WARN: %s", l.workerID, msg)
 }
 
 func (l *SimpleLogger) Debug(msg string, args ...interface{}) {
