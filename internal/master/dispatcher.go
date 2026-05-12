@@ -3,7 +3,6 @@ package master
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"strings"
 	"time"
 

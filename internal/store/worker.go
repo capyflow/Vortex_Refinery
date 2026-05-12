@@ -27,7 +27,7 @@ func NewWorkerStore(m *MongoStore) *WorkerStore {
 }
 
 // Register registers a new worker or updates existing one
-func (s *WorkerStore) Register(ctx context.Context, worker *types.WorkflowRegistry) error {
+func (s *WorkerStore) Register(ctx context.Context, worker *types.WorkerRegistry) error {
 	worker.RegisteredAt = time.Now()
 	worker.LastHeartbeat = time.Now()
 
@@ -50,8 +50,8 @@ func (s *WorkerStore) Register(ctx context.Context, worker *types.WorkflowRegist
 }
 
 // GetByID retrieves a worker by ID
-func (s *WorkerStore) GetByID(ctx context.Context, id string) (*types.WorkflowRegistry, error) {
-	var worker types.WorkflowRegistry
+func (s *WorkerStore) GetByID(ctx context.Context, id string) (*types.WorkerRegistry, error) {
+	var worker types.WorkerRegistry
 	err := s.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&worker)
 	if err != nil {
 		return nil, err
@@ -93,12 +93,12 @@ func (s *WorkerStore) UpdatePlugins(ctx context.Context, id string, plugins []st
 }
 
 // ListOnline lists all online workers
-func (s *WorkerStore) ListOnline(ctx context.Context) ([]*types.WorkflowRegistry, error) {
+func (s *WorkerStore) ListOnline(ctx context.Context) ([]*types.WorkerRegistry, error) {
 	return s.ListByStatus(ctx, "online")
 }
 
 // ListByStatus lists workers by status
-func (s *WorkerStore) ListByStatus(ctx context.Context, status string) ([]*types.WorkflowRegistry, error) {
+func (s *WorkerStore) ListByStatus(ctx context.Context, status string) ([]*types.WorkerRegistry, error) {
 	filter := bson.M{}
 	if status != "" {
 		filter["status"] = status
@@ -110,7 +110,7 @@ func (s *WorkerStore) ListByStatus(ctx context.Context, status string) ([]*types
 	}
 	defer cursor.Close(ctx)
 
-	var workers []*types.WorkflowRegistry
+	var workers []*types.WorkerRegistry
 	if err := cursor.All(ctx, &workers); err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func (s *WorkerStore) ListByStatus(ctx context.Context, status string) ([]*types
 }
 
 // FindWorkersByPlugin finds workers that have a specific plugin
-func (s *WorkerStore) FindWorkersByPlugin(ctx context.Context, pluginName string) ([]*types.WorkflowRegistry, error) {
+func (s *WorkerStore) FindWorkersByPlugin(ctx context.Context, pluginName string) ([]*types.WorkerRegistry, error) {
 	filter := bson.M{
 		"plugins": pluginName,
 		"status":  "online",
@@ -130,7 +130,7 @@ func (s *WorkerStore) FindWorkersByPlugin(ctx context.Context, pluginName string
 	}
 	defer cursor.Close(ctx)
 
-	var workers []*types.WorkflowRegistry
+	var workers []*types.WorkerRegistry
 	if err := cursor.All(ctx, &workers); err != nil {
 		return nil, err
 	}
@@ -165,14 +165,14 @@ func (s *WorkerStore) EnsureIndexes(ctx context.Context) error {
 
 // WorkerStoreInterface defines the worker store interface
 type WorkerStoreInterface interface {
-	Register(ctx context.Context, worker *types.WorkflowRegistry) error
-	GetByID(ctx context.Context, id string) (*types.WorkflowRegistry, error)
+	Register(ctx context.Context, worker *types.WorkerRegistry) error
+	GetByID(ctx context.Context, id string) (*types.WorkerRegistry, error)
 	UpdateHeartbeat(ctx context.Context, id string) error
 	UpdateStatus(ctx context.Context, id, status string) error
 	UpdatePlugins(ctx context.Context, id string, plugins []string) error
-	ListOnline(ctx context.Context) ([]*types.WorkflowRegistry, error)
-	ListByStatus(ctx context.Context, status string) ([]*types.WorkflowRegistry, error)
-	FindWorkersByPlugin(ctx context.Context, pluginName string) ([]*types.WorkflowRegistry, error)
+	ListOnline(ctx context.Context) ([]*types.WorkerRegistry, error)
+	ListByStatus(ctx context.Context, status string) ([]*types.WorkerRegistry, error)
+	FindWorkersByPlugin(ctx context.Context, pluginName string) ([]*types.WorkerRegistry, error)
 	MarkStaleWorkersOffline(ctx context.Context, threshold time.Duration) error
 	EnsureIndexes(ctx context.Context) error
 }

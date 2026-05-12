@@ -8,16 +8,21 @@ import (
 )
 
 type Config struct {
-	Server  ServerConfig  `yaml:"server"`
-	Redis   RedisConfig   `yaml:"redis"`
-	MongoDB MongoDBConfig `yaml:"mongodb"`
-	Master  MasterConfig  `yaml:"master"`
-	Worker  WorkerConfig  `yaml:"worker"`
+	Server    ServerConfig   `yaml:"server"`
+	Redis     RedisConfig    `yaml:"redis"`
+	MongoDB   MongoDBConfig  `yaml:"mongodb"`
+	Master    MasterConfig   `yaml:"master"`
+	Worker    WorkerConfig   `yaml:"worker"`
+	Workflows WorkflowConfig `yaml:"workflows"`
+}
+
+type WorkflowConfig struct {
+	Dir string `yaml:"dir"` // JSON file storage directory for workflows
 }
 
 type ServerConfig struct {
 	GRPCAddr string `yaml:"grpc_addr"`
-	HTTPAddr string `yaml:"http_addr"`
+	HTTPAddr string `yaml:"http_addr"` // REST API listen address, e.g. ":8080"
 }
 
 type RedisConfig struct {

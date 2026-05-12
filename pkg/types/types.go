@@ -12,47 +12,50 @@ type Event struct {
 
 // WorkflowDefinition defines a workflow template
 type WorkflowDefinition struct {
-	ID        string         `json:"id" bson:"_id"`
-	Name      string         `json:"name" bson:"name"`
-	Version   int            `json:"version" bson:"version"`
-	Trigger   Trigger        `json:"trigger" bson:"trigger"`
-	Nodes     []WorkflowNode `json:"nodes" bson:"nodes"`
-	OnComplete CallbackAction `json:"on_complete" bson:"on_complete"`
-	OnFailure CallbackAction  `json:"on_failure" bson:"on_failure"`
+	ID          string           `json:"id" bson:"_id"`
+	Name        string           `json:"name" bson:"name"`
+	Version     int              `json:"version" bson:"version"`
+	Trigger     Trigger          `json:"trigger" bson:"trigger"`
+	Nodes       []WorkflowNode   `json:"nodes" bson:"nodes"`
+	OnComplete  *CallbackAction  `json:"onComplete,omitempty" bson:"on_complete,omitempty"`
+	OnFailure   *CallbackAction  `json:"onFailure,omitempty" bson:"on_failure,omitempty"`
+	Published   bool             `json:"published" bson:"published"`
+	CreatedAt   time.Time        `json:"createdAt" bson:"created_at"`
+	UpdatedAt   time.Time        `json:"updatedAt" bson:"updated_at"`
 }
 
 // Trigger defines event matching conditions
 type Trigger struct {
-	EventType  string                 `json:"event_type" bson:"event_type"`
-	Conditions map[string]interface{} `json:"conditions" bson:"conditions"`
+	EventType  string            `json:"eventType" bson:"event_type"`
+	Conditions map[string]any    `json:"conditions" bson:"conditions"`
 }
 
-// WorkflowNode defines a single processing node
+// WorkflowNode is a plugin node within a workflow
 type WorkflowNode struct {
-	ID        string                 `json:"id" bson:"id"`
-	Name      string                 `json:"name" bson:"name"`
-	Plugin    string                 `json:"plugin" bson:"plugin"`
-	DependsOn []string               `json:"depends_on" bson:"depends_on"`
-	Config    map[string]interface{} `json:"config" bson:"config"`
+	ID        string            `json:"id" bson:"id"`
+	Name      string            `json:"name" bson:"name"`
+	Plugin    string            `json:"plugin" bson:"plugin"`
+	DependsOn []string          `json:"dependsOn" bson:"depends_on"`
+	Config    map[string]any    `json:"config" bson:"config"`
 }
 
 // CallbackAction defines callback on completion or failure
 type CallbackAction struct {
-	Action string                 `json:"action" bson:"action"`
-	Config map[string]interface{} `json:"config" bson:"config"`
+	Action string         `json:"action" bson:"action"`
+	Config map[string]any `json:"config" bson:"config"`
 }
 
 // WorkflowInstance represents a running workflow
 type WorkflowInstance struct {
 	ID             string    `json:"id" bson:"_id"`
-	WorkflowID     string    `json:"workflow_id" bson:"workflow_id"`
+	WorkflowID     string    `json:"workflowId" bson:"workflow_id"`
 	Status         string    `json:"status" bson:"status"`
-	Event          *Event    `json:"event" bson:"event"`
-	CurrentNodes   []string  `json:"current_nodes" bson:"current_nodes"`
-	CompletedNodes []string  `json:"completed_nodes" bson:"completed_nodes"`
-	FailedNodes    []string  `json:"failed_nodes" bson:"failed_nodes"`
-	CreatedAt      time.Time `json:"created_at" bson:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at" bson:"updated_at"`
+	Event          any       `json:"event" bson:"event"`
+	CurrentNodes   []string  `json:"currentNodes" bson:"current_nodes"`
+	CompletedNodes []string  `json:"completedNodes" bson:"completed_nodes"`
+	FailedNodes    []string  `json:"failedNodes" bson:"failed_nodes"`
+	CreatedAt      time.Time `json:"createdAt" bson:"created_at"`
+	UpdatedAt      time.Time `json:"updatedAt" bson:"updated_at"`
 }
 
 // TaskRecord represents a single task execution
@@ -74,11 +77,11 @@ type TaskRecord struct {
 
 // WorkerRegistry records registered workers
 type WorkerRegistry struct {
-	WorkerID       string    `json:"worker_id" bson:"worker_id"`
+	WorkerID       string    `json:"workerId" bson:"worker_id"`
 	Plugins        []string  `json:"plugins" bson:"plugins"`
 	Status         string    `json:"status" bson:"status"`
-	RegisteredAt  time.Time `json:"registered_at" bson:"registered_at"`
-	LastHeartbeat  time.Time `json:"last_heartbeat" bson:"last_heartbeat"`
+	RegisteredAt  time.Time `json:"registeredAt" bson:"registered_at"`
+	LastHeartbeat  time.Time `json:"lastHeartbeat" bson:"last_heartbeat"`
 }
 
 // Task represents a task dispatched to a worker

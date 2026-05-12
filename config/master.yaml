@@ -1,10 +1,10 @@
 server:
   grpc_addr: "0.0.0.0:50051"
-  http_addr: "0.0.0.0:8080"
+  http_addr: "0.0.0.0:8088"
 
 redis:
   addr: "localhost:6379"
-  password: ""
+  password: "1433223qQ"
   db: 0
   stream_key: "vortex:events"
   task_stream_key: "vortex:tasks"
@@ -16,3 +16,6 @@ mongodb:
 master:
   heartbeat_interval: 30s
   task_pull_interval: 5s
+
+workflows:
+  dir: "./workflows"

@@ -142,7 +142,6 @@ func GenerateSignature(meta *PluginMetadata, pluginBinary []byte, privateKeyByte
 	signedContent := append(metaJSON, pluginBinary...)
 
 	var sig []byte
-	var err error
 
 	switch algorithm {
 	case "ed25519":

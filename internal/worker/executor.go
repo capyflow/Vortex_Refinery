@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"Vortex_Refinery/config"
-	"Vortex_Refinery/internal/plugin"
 	plugin_pkg "Vortex_Refinery/internal/plugin"
 	"Vortex_Refinery/pkg/types"
 )

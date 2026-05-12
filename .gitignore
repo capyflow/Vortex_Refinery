@@ -1,0 +1,35 @@
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+vendor/
+*.test
+*.out
+go.work
+
+# Node
+ops/node_modules/
+ops/dist/
+.ops/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Secrets (local overrides)
+*.local.yaml
+.env
+
+# Workflow runtime data (local)
+workflows/*.json
+!workflows/.gitkeep
+
+# Misc
+.DS_Store
+Thumbs.db

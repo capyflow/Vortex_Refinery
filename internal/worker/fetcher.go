@@ -5,12 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/google/uuid"
 	"Vortex_Refinery/config"
 	"Vortex_Refinery/internal/bus"
-	"Vortex_Refinery/internal/plugin"
-	plugin_pkg "Vortex_Refinery/internal/plugin"
-	store_pkg "Vortex_Refinery/internal/store"
 )
 
 // Fetcher fetches tasks from Redis

@@ -3,6 +3,9 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"Vortex_Refinery/config"
 	"Vortex_Refinery/internal/bus"
@@ -54,4 +57,10 @@ func main() {
 	if err := m.Start(); err != nil {
 		log.Fatalf("master failed: %v", err)
 	}
+
+	// Block until signal
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	<-sigCh
+	log.Println("master shutting down...")
 }
