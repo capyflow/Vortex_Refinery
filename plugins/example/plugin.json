@@ -1,0 +1,10 @@
+{
+  "name": "example-processor",
+  "version": "1.0.0",
+  "description": "Example plugin for processing files",
+  "entry": "./main",
+  "dependencies": [],
+  "config_schema": {
+    "operation": {"type": "string", "required": true}
+  }
+}

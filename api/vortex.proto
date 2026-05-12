@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "Vortex_Refinery/api";
+
+import "google/protobuf/struct.proto";
+
+// Worker -> Master APIs (HTTP)
+message RegisterRequest {
+  string worker_id = 1;
+  repeated string plugins = 2;
+}
+
+message RegisterResponse {}
+
+message HeartbeatRequest {
+  string worker_id = 1;
+}
+
+message HeartbeatResponse {}
+
+message TaskReportRequest {
+  string task_id = 1;
+  string status = 2;
+  map<string, string> output = 3;
+  string error = 4;
+}
+
+message TaskReportResponse {}
+
+// Master -> Worker gRPC
+service VortexWorker {
+  rpc ExecuteTask(TaskRequest) returns (TaskResponse);
+}
+
+message TaskRequest {
+  string task_id = 1;
+  string plugin = 2;
+  google.protobuf.Struct config = 3;
+  map<string, string> context = 4;
+}
+
+message TaskResponse {
+  string task_id = 1;
+  bool success = 2;
+  map<string, string> output = 3;
+  string error = 4;
+}

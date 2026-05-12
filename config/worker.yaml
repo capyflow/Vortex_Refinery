@@ -1,0 +1,13 @@
+master:
+  grpc_addr: "localhost:50051"
+
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+  stream_key: "vortex:events"
+  task_stream_key: "vortex:tasks"
+
+plugin:
+  dir: "./plugins"
+  reload_interval: 10s
