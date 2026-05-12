@@ -54,6 +54,12 @@ func (p *Plugin) Health() error {
 	return nil
 }
 
+// Destroy cleans up plugin resources
+func (p *Plugin) Destroy(ctx context.Context) error {
+	// Cleanup resources, close connections, etc.
+	return nil
+}
+
 // Register is the entry point for plugin registration
 func Register(host *PluginHost) error {
 	return host.Register(&Plugin{})

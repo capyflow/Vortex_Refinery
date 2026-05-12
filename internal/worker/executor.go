@@ -16,14 +16,18 @@ type Executor struct {
 	cfg        *config.Config
 	pluginHost *plugin_pkg.PluginHost
 	plugins    map[string]plugin_pkg.Plugin
+	loader     *plugin_pkg.Loader
+	validator  *plugin_pkg.Validator
 }
 
 // NewExecutor creates a new task executor
-func NewExecutor(cfg *config.Config, pluginHost *plugin_pkg.PluginHost) *Executor {
+func NewExecutor(cfg *config.Config, pluginHost *plugin_pkg.PluginHost, loader *plugin_pkg.Loader) *Executor {
 	return &Executor{
 		cfg:        cfg,
 		pluginHost: pluginHost,
 		plugins:    make(map[string]plugin_pkg.Plugin),
+		loader:     loader,
+		validator:  plugin_pkg.NewValidator(),
 	}
 }
 
@@ -46,6 +50,26 @@ func (e *Executor) Execute(ctx context.Context, task *types.Task) (*ExecutionRes
 			Success: false,
 			Error:   "plugin not found: " + pluginName,
 		}, nil
+	}
+
+	// Validate config against schema before execution
+	if meta, ok := e.loader.GetMetadata(pluginName); ok {
+		configBytes, err := json.Marshal(task.Config)
+		if err != nil {
+			return &ExecutionResult{
+				TaskID:  task.TaskID,
+				Success: false,
+				Error:   "failed to serialize config: " + err.Error(),
+			}, nil
+		}
+		if err := e.validator.Validate(meta, configBytes); err != nil {
+			log.Printf("[%s] plugin %s config validation failed: %v", e.pluginHost.WorkerID, pluginName, err)
+			return &ExecutionResult{
+				TaskID:  task.TaskID,
+				Success: false,
+				Error:   "config validation failed: " + err.Error(),
+			}, nil
+		}
 	}
 
 	// Serialize context as input

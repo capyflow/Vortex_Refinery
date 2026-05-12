@@ -11,3 +11,10 @@ redis:
 plugin:
   dir: "./plugins"
   reload_interval: 10s
+  # Signature verification (optional in dev, required in prod)
+  require_signature: false
+  trusted_signers: []
+  # Example of adding a trusted signer:
+  # - name: "org-primary"
+  #   algorithm: "ed25519"
+  #   public_key: "BASE64_ENCODED_PUBLIC_KEY"

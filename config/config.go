@@ -45,8 +45,16 @@ type WorkerConfig struct {
 }
 
 type PluginConfig struct {
-	Dir             string        `yaml:"dir"`
-	ReloadInterval  time.Duration `yaml:"reload_interval"`
+	Dir              string           `yaml:"dir"`
+	ReloadInterval   time.Duration    `yaml:"reload_interval"`
+	TrustedSigners   []TrustedSigner  `yaml:"trusted_signers"`
+	RequireSignature bool             `yaml:"require_signature"`
+}
+
+type TrustedSigner struct {
+	Name      string `yaml:"name"`
+	Algorithm string `yaml:"algorithm"`
+	PublicKey string `yaml:"public_key"`
 }
 
 func Load(path string) (*Config, error) {

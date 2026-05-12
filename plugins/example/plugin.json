@@ -2,9 +2,12 @@
   "name": "example-processor",
   "version": "1.0.0",
   "description": "Example plugin for processing files",
+  "author": "Vortex Team",
+  "license": "MIT",
   "entry": "./main",
   "dependencies": [],
   "config_schema": {
-    "operation": {"type": "string", "required": true}
+    "operation": {"type": "string", "required": true},
+    "timeout": {"type": "integer", "required": false, "default": 30}
   }
 }
