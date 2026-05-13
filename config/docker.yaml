@@ -1,0 +1,21 @@
+server:
+  grpc_addr: "0.0.0.0:50051"
+  http_addr: "0.0.0.0:8088"
+
+redis:
+  addr: "redis:6379"
+  password: "1433223qQ"
+  db: 0
+  stream_key: "vortex:events"
+  task_stream_key: "vortex:tasks"
+
+mongodb:
+  uri: "mongodb://mongodb:27017"
+  database: "vortex_refinery"
+
+master:
+  heartbeat_interval: 30s
+  task_pull_interval: 5s
+
+workflows:
+  dir: "./workflows"

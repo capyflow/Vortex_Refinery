@@ -1,0 +1,31 @@
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /build
+
+# Install build dependencies
+RUN apk add --no-cache git ca-certificates
+
+# Cache go modules
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# Build
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o bin/refinery ./cmd/master
+
+# ─── Runtime stage ───────────────────────────────────────────────────────────
+FROM alpine:3.20
+
+RUN apk add --no-cache ca-certificates curl
+
+WORKDIR /app
+
+COPY --from=builder /build/bin/refinery ./bin/refinery
+COPY --from=builder /build/config ./config
+COPY --from=builder /build/workflows ./workflows
+
+EXPOSE 8088
+
+ENTRYPOINT ["./bin/refinery"]
+CMD ["-conf", "config/docker.yaml"]

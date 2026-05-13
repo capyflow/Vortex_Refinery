@@ -2,25 +2,25 @@ package master
 
 import (
 	"context"
-	"log"
-	"net/http"
 	"time"
 
-	"Vortex_Refinery/config"
-	"Vortex_Refinery/internal/api"
+	"github.com/capyflow/allspark-go/logx"
+
+	"Vortex_Refinery/conf"
 	"Vortex_Refinery/internal/bus"
 	"Vortex_Refinery/internal/store"
+	"Vortex_Refinery/server"
 )
 
 type Master struct {
-	cfg       *config.Config
+	cfg       *conf.Config
 	store     *store.MongoStore
 	eventBus  *bus.EventBus
 	taskBus   *bus.TaskBus
-	apiServer *api.Server
+	refinery  *server.RefineryServer
 }
 
-func New(s *store.MongoStore, eb *bus.EventBus, tb *bus.TaskBus, cfg *config.Config) *Master {
+func New(s *store.MongoStore, eb *bus.EventBus, tb *bus.TaskBus, cfg *conf.Config) *Master {
 	return &Master{
 		cfg:      cfg,
 		store:    s,
@@ -30,44 +30,33 @@ func New(s *store.MongoStore, eb *bus.EventBus, tb *bus.TaskBus, cfg *config.Con
 }
 
 func (m *Master) Start() error {
-	log.Println("Master starting...")
+	logx.Info("Master|Start|Info|starting master")
 
-	// Start REST API server
-	if m.cfg.Server.HTTPAddr != "" {
-		wfDir := m.cfg.Workflows.Dir
-		if wfDir == "" {
-			wfDir = "./workflows"
-		}
-		h := api.NewHandler(m.store, wfDir)
-		m.apiServer = api.NewServer(m.cfg.Server.HTTPAddr, h)
-
-		go func() {
-			log.Printf("REST API server listening on %s", m.cfg.Server.HTTPAddr)
-			if err := m.apiServer.Start(); err != nil && err != http.ErrServerClosed {
-				log.Printf("API server error: %v", err)
-			}
-		}()
-	}
+	// Start Refinery HTTP API Server
+	refinery := server.NewRefineryServer(context.Background(), m.cfg, m.store)
+	m.refinery = refinery
+	go refinery.Start()
 
 	// TODO: Initialize gRPC server
 	// TODO: Start event consumer loop
 	// TODO: Start task result receiver
 	// TODO: Start heartbeat checker
 
-	log.Println("Master started successfully")
+	logx.Info("Master|Start|Info|master started successfully")
 	return nil
 }
 
-func (m *Master) Stop(ctx context.Context) error {
-	if m.apiServer != nil {
-		return nil // http.Server handles shutdown via ctx
+func (m *Master) Shutdown(ctx context.Context) error {
+	logx.Infof("Master|Shutdown|Info|shutting down")
+	if m.refinery != nil {
+		return m.refinery.Shutdown(ctx)
 	}
 	return nil
 }
 
 func (m *Master) Health() map[string]interface{} {
 	return map[string]interface{}{
-		"status":     "ok",
-		"uptime":     time.Now().Unix(),
+		"status": "ok",
+		"uptime": time.Now().Unix(),
 	}
 }

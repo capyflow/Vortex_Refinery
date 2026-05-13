@@ -1,0 +1,54 @@
+# ─── Build stage ──────────────────────────────────────────────────────────────
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+# Build (skip type checking for speed; adjust if needed)
+RUN npm run build
+
+# ─── Runtime stage ────────────────────────────────────────────────────────────
+FROM nginx:1.27-alpine
+
+# Remove default nginx config
+RUN rm /etc/nginx/http.d/default.conf
+
+# Copy built static files
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Custom nginx config: serve static files + proxy API to backend
+RUN echo 'server { \
+    listen 80; \
+    server_name _; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+\
+    # Serve static assets with caching \
+    location ~* \\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ { \
+        expires 1y; \
+        add_header Cache-Control "public, immutable"; \
+    } \
+\
+    # SPA fallback: all routes back to index.html \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+\
+    # Proxy API calls to backend \
+    location /api/ { \
+        proxy_pass http://vortex_backend:8088/v1/; \
+        proxy_http_version 1.1; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
+        proxy_set_header X-Forwarded-Proto $scheme; \
+    } \
+}' > /etc/nginx/http.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
